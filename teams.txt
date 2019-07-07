@@ -1,0 +1,291 @@
+=== [gen7ou] Untitled 11 ===
+
+Tapu Koko @ Electrium Z
+Ability: Electric Surge
+EVs: 252 SpA / 4 SpD / 252 Spe
+Timid Nature
+- Thunder
+- U-turn
+- Hidden Power [Ice]
+- Volt Switch
+
+Zeraora @ Choice Band
+Ability: Volt Absorb
+EVs: 252 Atk / 4 SpD / 252 Spe
+Jolly Nature
+- Plasma Fists
+- Close Combat
+- Knock Off
+- Volt Switch
+
+Landorus-Therian @ Leftovers
+Ability: Intimidate
+EVs: 248 HP / 252 Def / 8 Spe
+Impish Nature
+- Earthquake
+- Stealth Rock
+- U-turn
+- Defog
+
+Tangrowth @ Assault Vest
+Ability: Regenerator
+EVs: 248 HP / 252 SpD / 8 Spe
+Sassy Nature
+- Giga Drain
+- Earthquake
+- Knock Off
+- Hidden Power [Ice]
+
+Pelipper @ Damp Rock
+Ability: Drizzle
+EVs: 248 HP / 252 Def / 8 SpA
+Bold Nature
+IVs: 0 Atk
+- Scald
+- Hurricane
+- Roost
+- Defog
+
+Swampert-Mega @ Swampertite
+Ability: Damp
+EVs: 252 Atk / 4 SpD / 252 Spe
+Jolly Nature
+- Earthquake
+- Waterfall
+- Ice Punch
+- Substitute
+
+
+=== [gen7ou] Untitled 10 ===
+
+Sableye-Mega @ Sablenite
+Ability: Prankster
+EVs: 248 HP / 8 Atk / 252 SpD
+Careful Nature
+- Knock Off
+- Will-O-Wisp
+- Recover
+- Protect
+
+Clefable @ Leftovers
+Ability: Magic Guard
+EVs: 252 HP / 252 Def / 4 SpA
+Bold Nature
+IVs: 0 Atk
+- Cosmic Power
+- Charge Beam
+- Soft-Boiled
+- Stored Power
+
+Gliscor @ Toxic Orb
+Ability: Poison Heal
+EVs: 184 HP / 124 Atk / 200 Spe
+Jolly Nature
+- Earthquake
+- Ice Fang
+- Roost
+- Swords Dance
+
+Zapdos @ Electrium Z
+Ability: Static
+EVs: 252 SpA / 4 SpD / 252 Spe
+Timid Nature
+IVs: 0 Atk
+- Thunderbolt
+- Hidden Power [Ice]
+- Defog
+- Roost
+
+Toxapex @ Black Sludge
+Ability: Regenerator
+EVs: 252 HP / 252 Def / 4 SpD
+Bold Nature
+IVs: 0 Atk
+- Scald
+- Toxic Spikes
+- Haze
+- Recover
+
+Jirachi @ Leftovers
+Ability: Serene Grace
+EVs: 252 HP / 224 SpD / 32 Spe
+Careful Nature
+- Stealth Rock
+- Iron Head
+- Wish
+- Protect
+
+
+=== [gen7ou] Untitled 9 ===
+
+Breloom @ Fightinium Z
+Ability: Technician
+EVs: 252 Atk / 4 SpD / 252 Spe
+Jolly Nature
+- Bullet Seed
+- Mach Punch
+- Swords Dance
+- Superpower
+
+Bisharp @ Life Orb
+Ability: Defiant
+EVs: 252 Atk / 4 SpD / 252 Spe
+Adamant Nature
+- Iron Head
+- Knock Off
+- Sucker Punch
+- Swords Dance
+
+Greninja @ Focus Sash
+Ability: Protean
+EVs: 252 SpA / 4 SpD / 252 Spe
+Timid Nature
+IVs: 0 Atk
+- Ice Beam
+- Spikes
+- Toxic Spikes
+- Dark Pulse
+
+Landorus-Therian @ Focus Sash
+Ability: Intimidate
+EVs: 252 Atk / 4 SpD / 252 Spe
+Jolly Nature
+- Earthquake
+- Stealth Rock
+- Explosion
+- Swords Dance
+
+Scizor @ Scizorite
+Ability: Light Metal
+EVs: 252 Atk / 4 SpD / 252 Spe
+Adamant Nature
+- Bullet Punch
+- Swords Dance
+- Superpower
+- Bug Bite
+
+Tapu Koko @ Light Clay
+Ability: Electric Surge
+EVs: 248 HP / 8 SpD / 252 Spe
+Jolly Nature
+- Reflect
+- Light Screen
+- Taunt
+- U-turn
+
+
+=== [gen7ou] Untitled 8 ===
+
+Altaria-Mega @ Altarianite
+Ability: Pixilate
+Happiness: 0
+EVs: 252 Atk / 4 SpD / 252 Spe
+Jolly Nature
+- Frustration
+- Earthquake
+- Dragon Dance
+- Roost
+
+Magnezone @ Choice Specs
+Ability: Magnet Pull
+EVs: 252 SpA / 4 SpD / 252 Spe
+Modest Nature
+IVs: 0 Atk
+- Thunderbolt
+- Volt Switch
+- Flash Cannon
+- Hidden Power [Fire]
+
+Celesteela @ Leftovers
+Ability: Beast Boost
+EVs: 252 HP / 4 Atk / 252 Def
+Relaxed Nature
+- Heavy Slam
+- Flamethrower
+- Leech Seed
+- Protect
+
+Greninja-Ash @ Waterium Z
+Ability: Battle Bond
+EVs: 252 SpA / 4 SpD / 252 Spe
+Timid Nature
+- Hydro Pump
+- Water Shuriken
+- Dark Pulse
+- Spikes
+
+Tangrowth @ Assault Vest
+Ability: Regenerator
+EVs: 252 HP / 4 Atk / 252 SpD
+Sassy Nature
+- Giga Drain
+- Earthquake
+- Knock Off
+- Hidden Power [Ice]
+
+Garchomp @ Choice Scarf
+Ability: Rough Skin
+EVs: 252 Atk / 4 SpD / 252 Spe
+Jolly Nature
+- Earthquake
+- Outrage
+- Stealth Rock
+- Stone Edge
+
+
+=== [gen7ou] Untitled 7 ===
+
+Tapu Koko @ Light Clay
+Ability: Electric Surge
+EVs: 248 HP / 8 SpD / 252 Spe
+Jolly Nature
+- Reflect
+- Light Screen
+- U-turn
+- Taunt
+
+Hawlucha @ Electric Seed
+Ability: Unburden
+EVs: 24 HP / 252 Atk / 232 Spe
+Adamant Nature
+- Acrobatics
+- High Jump Kick
+- Swords Dance
+- Drain Punch
+
+Landorus-Therian @ Focus Sash
+Ability: Intimidate
+EVs: 252 Atk / 4 SpD / 252 Spe
+Jolly Nature
+- Earthquake
+- Stealth Rock
+- Explosion
+- Swords Dance
+
+Gyarados-Mega @ Gyaradosite
+Ability: Mold Breaker
+EVs: 252 Atk / 4 SpD / 252 Spe
+Jolly Nature
+- Dragon Dance
+- Substitute
+- Waterfall
+- Crunch
+
+Kyurem-Black @ Icium Z
+Ability: Teravolt
+EVs: 252 Atk / 4 SpA / 252 Spe
+Naive Nature
+- Freeze Shock
+- Fusion Bolt
+- Ice Beam
+- Earth Power
+
+Magearna @ Leftovers
+Ability: Soul-Heart
+EVs: 252 SpA / 4 SpD / 252 Spe
+Timid Nature
+IVs: 0 Atk
+- Ice Beam
+- Thunderbolt
+- Shift Gear
+- Calm Mind

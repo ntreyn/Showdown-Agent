@@ -1,0 +1,56 @@
+=== [gen7ou] Untitled 11 ===
+
+Tapu Koko @ Electrium Z
+Ability: Electric Surge
+EVs: 252 SpA / 4 SpD / 252 Spe
+Timid Nature
+- Thunder
+- U-turn
+- Hidden Power [Ice]
+- Volt Switch
+
+Zeraora @ Choice Band
+Ability: Volt Absorb
+EVs: 252 Atk / 4 SpD / 252 Spe
+Jolly Nature
+- Plasma Fists
+- Close Combat
+- Knock Off
+- Volt Switch
+
+Landorus-Therian @ Leftovers
+Ability: Intimidate
+EVs: 248 HP / 252 Def / 8 Spe
+Impish Nature
+- Earthquake
+- Stealth Rock
+- U-turn
+- Defog
+
+Tangrowth @ Assault Vest
+Ability: Regenerator
+EVs: 248 HP / 252 SpD / 8 Spe
+Sassy Nature
+- Giga Drain
+- Earthquake
+- Knock Off
+- Hidden Power [Ice]
+
+Pelipper @ Damp Rock
+Ability: Drizzle
+EVs: 248 HP / 252 Def / 8 SpA
+Bold Nature
+IVs: 0 Atk
+- Scald
+- Hurricane
+- Roost
+- Defog
+
+Swampert-Mega @ Swampertite
+Ability: Damp
+EVs: 252 Atk / 4 SpD / 252 Spe
+Jolly Nature
+- Earthquake
+- Waterfall
+- Ice Punch
+- Substitute
