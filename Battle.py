@@ -14,6 +14,8 @@ from selenium.common.exceptions import NoSuchElementException
 from AI import Agent
 from BattleMask import Mask
 
+import time
+
 class Battle:
 
     def __init__(self, driver, pokedex, agent_team):
@@ -28,17 +30,36 @@ class Battle:
     
     def battle(self):
 
-        wait = WebDriverWait(self.driver, 10)
+        wait = WebDriverWait(self.driver, 20)
         self.set_teams(wait)
+
+        rightbar = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div[class='rightbar']")))
+        self.opponent = rightbar.find_element_by_css_selector("strong").get_attribute("innerText").strip()
+
+        # turn0_battle_history = wait.until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "div[class='battle-history']")))
+
+        # for tbh in turn0_battle_history:
+            # print(tbh.get_attribute("innerText"))
+
+        time.sleep(40)
 
         self.mask = Mask()
         self.agent = Agent(self.mask)
 
+        self.agent.lead()
+
+        print("here")
+
+        self.update_mask(wait)
+
+        time.sleep(20)
+
+        
 
         while not self.done:
-            self.execute_turn()
+            self.execute_turn(wait)
 
-    def execute_turn(self):
+    def execute_turn(self, wait):
 
         # Speed and damage calcs
         # Assess switches (both sides)
@@ -51,23 +72,61 @@ class Battle:
         # Update info
 
         action = self.agent.get_action()
-        self.execute_action(action)
+        self.execute_action(action, wait)
 
-
+    
 
         self.turn += 1
         self.done = True
 
 
-    def execute_action(self, action):
+    def execute_action(self, action, wait):
 
 
 
 
         
-        self.update_mask()    
+        self.update_mask(wait)    
 
-    def update_mask(self):
+    def update_mask(self, wait):
+
+        # temp = wait.until(EC.visibility_of_all_elements_located((By.XPATH, "//div[./preceding-sibling::h2[.='Turn {}']][./following-sibling::h2[.='Turn {}']]".format(self.turn, self.turn + 1))))
+        
+        # for t in temp:
+            # print(t.get_attribute("innerText"))
+
+        weath = wait.until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "div[class^='weather']")))
+
+        for w in weath:
+            print(w.get_attribute("innerText"))
+
+        # If field condition is new, check for setter in battle log
+
+
+        # Get hazards from img src or log
+
+
+        # Update teams for mega
+
+
+        # Add substitute
+
+        # <span class="status brn">BRN</span>
+        # Look for class^='status' innerText
+        """
+        <div class="status">
+            <span class="bad">Leech&nbsp;Seed</span> 
+        </div>
+        """
+        # Look for class='status'
+        # find_element_by_css_select "span[class='bad']" innerText
+        """
+        <div class="status">
+            <span class="brn">BRN</span>
+            <span class="bad">Confused</span> 
+        </div>
+        """
+
         pass
 
     def set_teams(self, wait):
