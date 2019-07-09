@@ -109,7 +109,7 @@ class ShowdownDriver:
         index = teams_list.index(team_line)
         next_index = index + 1
 
-        self.selected_team = []
+        self.selected_team = {}
         
         while "===" not in teams_list[next_index]:
             line = teams_list[next_index]
@@ -120,9 +120,12 @@ class ShowdownDriver:
                 gender = None
                 nick = None
 
-                misc, item = line.split('@')
-                item = item.strip()
-                misc = misc.strip()
+                if '@' in line:
+                    misc, item = line.split('@')
+                    item = item.strip()
+                    misc = misc.strip()
+                else:
+                    misc = line.strip()
 
                 reg_gend = re.search('(\([MF]\))', misc)
                 if reg_gend is not None:
@@ -196,6 +199,7 @@ class ShowdownDriver:
                     line = teams_list[next_index]
                 
                 set_dict = {
+                    "team_number": len(self.selected_team),
                     "species": species,
                     "nickname": nick,
                     "gender": gender,
@@ -212,7 +216,7 @@ class ShowdownDriver:
 
                 pokemon = self.pokedex.get_pokemon(species)
                 pokemon.create_set(set_dict)
-                self.selected_team.append(pokemon)
+                self.selected_team[species] = pokemon
 
             next_index += 1
             if next_index >= len(teams_list):

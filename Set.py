@@ -24,7 +24,7 @@ class Set(object):
             "Spe": 31
         }
 
-        self.keys_total = ["species", "nickname", "gender", "item", "ability", "level",
+        self.keys_total = ["team_number", "species", "nickname", "gender", "item", "ability", "level",
                         "shiny", "happiness", "EVs", "nature", "IVs", "moves"]
 
         self.keys_in = ["EVs", "IVs"]

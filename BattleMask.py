@@ -3,7 +3,32 @@
 
 
 
+
 class Mask:
+
+    ConditionCauses = {
+        "Sun": { "move": "Sunny Day", "ability": "Drought" },
+        "Rain": { "move": "Rain Dance", "ability": "Drizzle" },
+        "Sand": { "move": "Sandstorm", "ability": "Sand Stream" },
+        "Hail": { "move": "Hail", "ability": "Snow Warning" },
+
+        "Electric Terrain": { "move": "Electric Terrain", "ability": "Electric Surge" },
+        "Misty Terrain": { "move": "Misty Terrain", "ability": "Misty Surge" },
+        "Grassy Terrain": { "move": "Grassy Terrain", "ability": "Grassy Surge" },
+        "Psychic Terrain": { "move": "Psychic Terrain", "ability": "Psychic Surge" },
+
+        "Light Screen": { "move": "Light Screen", "ability": None },
+        "Reflect": { "move": "Reflect", "ability": None },
+        "Aurora Veil": { "move": "Aurora Veil", "ability": None },
+
+        "Trick Room": { "move": "Trick Room", "ability": None },
+        "Wonder Room": { "move": "Wonder Room", "ability": None },
+        "Magic room": { "move": "Magic Room", "ability": None },
+        "Gravity": { "move": "Gravity", "ability": None },
+
+        "Water Sport": { "move": "Water Sport", "ability": None },
+        "Mud Sport": { "move": "Mud Sport", "ability": None }
+    }
 
     def __init__(self):
 
@@ -12,24 +37,25 @@ class Mask:
 
 
         Weather:
-            Sun * 
-            Heavy sun *
-            Rain *
-            Heavy sun *
-            Sand *
-            Hail *
-            Strong winds *
+            Sun : Sunny Day, Drought
+            Heavy sun : Desolate Land
+            Rain : Rain Dance, Drizzle
+            Heavy Rain : Primordial Sea
+            Sand : Sandstorm, Sand Stream
+            Hail : Hail, Snow Warning
+            Strong winds : Delta Stream
+
 
         Terrain:
-            Electric *
-            Misty *
-            Grassy *
-            Psychic *
+            Electric : Electric Terrain, Electric Surge
+            Misty : Misty Terrain, Misty Surge
+            Grassy : Grassy Terrain, Grassy Surge
+            Psychic : Psychic Terrain, Psychic Surge
 
         Screens:
-            Light screen *
-            Reflect *
-            Aurora Veil *
+            Light screen : Light Screen
+            Reflect : Reflect
+            Aurora Veil : Aurora Veil
 
         Hazards:
             Rocks x
@@ -38,15 +64,15 @@ class Mask:
             Webs x
 
         Magic:
-            Trick room *
-            Wonder room *
-            Magic room *
-            Gravity *
+            Trick room : Trick Room
+            Wonder room : Wonder Room
+            Magic room : Magic Room
+            Gravity : Gravity
             Perish Song x
 
         Sports:
-            Water Sport *
-            Mud Sport *
+            Water Sport : Water Sport
+            Mud Sport : Mud Sport
 
         Misc:
             Uproar x
@@ -57,8 +83,8 @@ class Mask:
         """
         
         self.field = {
-            "conditions": None,
-            "hazards": None
+            "conditions": {},
+            "hazards": {}
         }
     
 
@@ -80,7 +106,9 @@ class Mask:
         Leech Seed
         Ingrain
 
+        Opponent Nicknames
 
+        Form change
 
         Movesets
         Speed Tiers
@@ -88,3 +116,6 @@ class Mask:
 
 
     """
+
+    def update(self, set_changes, field_changes):
+        pass
