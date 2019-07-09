@@ -32,6 +32,7 @@ Field Conditions and Hazards:
     * Add turn logic for updating item (heat rock, light clay)
     * Add side attribute for screens
     * Add heavy sun, heavy rain, strong winds
+    * Add tailwind, lucky chant
 3. Future sight, doom desire?
     * Wait until move implementation
 

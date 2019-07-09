@@ -42,7 +42,7 @@ class Battle:
         # for tbh in turn0_battle_history:
             # print(tbh.get_attribute("innerText"))
 
-        time.sleep(10)
+        time.sleep(30)
 
         self.mask = Mask()
         self.agent = Agent(self.mask)
@@ -55,7 +55,7 @@ class Battle:
 
         while not self.done:
             print("here")
-            time.sleep(20)
+            time.sleep(15)
             self.execute_turn(wait)
 
     def execute_turn(self, wait):
@@ -123,12 +123,13 @@ class Battle:
         Boosts / Drops
         """
 
+        new_mons = []
         updated_sets = {}
 
         for mon in self.opponent_team.values():
             n = getattr(mon.set, "team_number")
             species = mon.species
-            updated_sets[mon.species] = {}
+            updated_sets[mon.species] = {"moves": []}
 
             pokemon_icon = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "span[data-tooltip='pokemon|1|{}']".format(n))))
             hover = ActionChains(self.driver).move_to_element(pokemon_icon)
@@ -137,9 +138,9 @@ class Battle:
             pokemon_tooltip = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div[class='tooltip']")))
             inner_text = pokemon_tooltip.get_attribute("innerText")
 
-            # print("************")
-            # print(inner_text)
-            # print("xxxxxxxxxxxxx")
+            #print("************")
+            #print(inner_text)
+            #print("xxxxxxxxxxxxx")
 
             it_list = [x for x in inner_text.splitlines() if x != '']
 
@@ -150,21 +151,55 @@ class Battle:
                     nick_re = re.search('\({}\)'.format(mon.species), line)
                     if nick_re is not None:
                         print(species, line.replace(nick_re.group(), "").strip())
-                        updated_sets[species]["nickname"] = line.replace(nick_re.group(), "").strip()
-                
+                        setattr(self.opponent_team[species].set, "nickname", line.replace(nick_re.group(), "").strip())
+
+
                 # Update ability 
                 if mon.set.ability is None:
                     ability_re = re.search('Ability:', line)
                     if ability_re is not None:
                         print(species, line.replace(ability_re.group(), "").strip())
-                        updated_sets[species]["ability"] = line.replace(ability_re.group(), "").strip()
-                
+                        setattr(self.opponent_team[species].set, "ability", line.replace(ability_re.group(), "").strip())
 
                 # Update item
                 if mon.set.item is None:
                     if line[:4] == "Item" and line[6:].strip() != "(exists)":
                         print(species, line[6:].strip())
-                        updated_sets[species]["item"] = line[6:].strip()
+                        setattr(self.opponent_team[species].set, "item", line[6:].strip())
+
+
+                # Update moves
+                if line[0] == "•":
+                    pp_re = re.search('\(.*\)', line)
+                    if pp_re is not None:
+                        pp_remaining = int(pp_re.group()[1:-1].split('/')[0])
+                        move = line.replace(pp_re.group(), "")[1:].strip()
+                        if (move, pp_remaining) not in mon.set.moves:
+                            getattr(self.opponent_team[species].set, "moves").append((move, pp_remaining))
+
+                    
+                # Greninja (Greninja-Ash)
+                # Update form
+                if mon.form is None:
+                    if_form_re = re.search('{} \(.*\)'.format(mon.set.species), line)
+                    if if_form_re is not None:
+                        form_re = re.search('\(.*\)', line)
+                        new_species = form_re.group()[1:-1]
+                        new_mons.append((species, new_species))
+
+
+        for species, new_species in new_mons:
+            new_mon = self.pokedex.get_pokemon(new_species)
+
+            set_dict = {}
+            for key in self.opponent_team[species].set.keys_total:
+                set_dict[key] = getattr(self.opponent_team[species].set, key)
+            set_dict["species"] = new_species
+            new_mon.create_set(set_dict)
+
+            del self.opponent_team[species]
+            self.opponent_team[new_species] = new_mon
+            self.opponent_team[new_species].print_set()
 
 
             
@@ -340,7 +375,7 @@ class Battle:
                 "EVs": {},
                 "nature": None,
                 "IVs": {},
-                "moves": None
+                "moves": []
             }
 
             team_list.append(set_dict)
