@@ -30,6 +30,8 @@ class Mask:
         "Mud Sport": { "move": "Mud Sport", "ability": None }
     }
 
+    StatusList = ['BRN', 'TOX', 'PAR', 'PSN', 'SLP', 'FRZ']
+
     def __init__(self):
 
         """
@@ -86,6 +88,10 @@ class Mask:
             "conditions": {},
             "hazards": {}
         }
+
+        self.opponent_team = {}
+
+        self.agent_team = {}
     
 
     """

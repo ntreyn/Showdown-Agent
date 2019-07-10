@@ -2,22 +2,25 @@
 
 # TODO
 
+Test stale element fix in battle.get_opposing_team()
+
 Turn Updates:
 
 1. Update sets each turn
-    * Detected: items, abilities, nicknames
-    * Must Detect: form changes, moveset
+    * Detected: items, abilities, nicknames **DONE**
+    * Must Detect: form changes, moveset **DONE**
         * Moveset requires change to moveset dict instead of list
         * Requires eventual movedex and move class
     * Add knock off condition to items
-    * Create nickname to species dict
+    * Create nickname to species dict **DONE**
     * Z move case
 2. Update lasting attributes
-    * HP / PP / Fainted
-    * Status Conditions
+    * HP / PP / Fainted **DONE**
+    * Status Conditions **DONE**
 3. Update temp attributes
     * Sub, confusion, perish, leech, ingrain
-    * Stat changes (boosts, drops)
+    * Stat changes (boosts, drops) **DONE**
+    * Remove attributes on switch
 4. Differentiate between friendly and opposing pokemon
 5. Tweak for friendly updates too
 

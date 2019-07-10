@@ -25,11 +25,27 @@ class Set(object):
         }
 
         self.keys_total = ["team_number", "species", "nickname", "gender", "item", "ability", "level",
-                        "shiny", "happiness", "EVs", "nature", "IVs", "moves"]
-
-        self.keys_in = ["EVs", "IVs"]
+                        "shiny", "happiness", "EVs", "nature", "IVs", "moves", "fainted", "hp", "status", "afflictions", "stats_changes"]
+        self.keys_in = ["EVs", "IVs", "fainted", "hp", "status", "afflictions", "stats_changes"]
 
         self.update_set(set_dict)
+        self.reset()
+
+    def reset(self):
+        self.fainted = False
+        self.hp = 100.0
+        self.status = None
+        self.afflictions = []
+
+        self.stats_changes = {
+            "Atk": 0,
+            "Def": 0,
+            "SpA": 0,
+            "SpD": 0,
+            "Spe": 0,
+            "Evasion": 0,
+            "Accuracy": 0
+        }
 
     def update_set(self, set_dict):
         set_dict = self.set_evs_ivs(set_dict)
@@ -55,6 +71,7 @@ class Set(object):
         for key in self.keys_total:
             if key in self.keys_in:
                 print("{}: {}".format(key, getattr(self, key)))
+        print("\n")
 
 
         

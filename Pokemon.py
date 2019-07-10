@@ -10,17 +10,6 @@ class Pokemon(object):
 
         # (set, probablity)
         self.usage_sets = []
-
-        self.hp = 0
-
-        self.stats_changes = {
-            "HP": 1.0,
-            "Atk": 1.0,
-            "Def": 1.0,
-            "SpA": 1.0,
-            "SpD": 1.0,
-            "Spe": 1.0
-        }
         
     
     def create_set(self, set_dict):
