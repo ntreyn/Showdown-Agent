@@ -25,17 +25,20 @@ class Set(object):
         }
 
         self.keys_total = ["team_number", "species", "nickname", "gender", "item", "ability", "level",
-                        "shiny", "happiness", "EVs", "nature", "IVs", "moves", "fainted", "hp", "status", "afflictions", "stats_changes"]
-        self.keys_in = ["EVs", "IVs", "fainted", "hp", "status", "afflictions", "stats_changes"]
+                            "shiny", "happiness", "EVs", "nature", "IVs", "moves", "fainted", "hp", 
+                            "status",  "afflictions", "stats_changes", "new_types", "added_type", "knocked", "temp_ability"]
+        self.keys_in = ["EVs", "IVs", "fainted", "hp", "status", "afflictions", "stats_changes", "new_types", 
+                            "added_type", "knocked", "temp_ability"]
 
         self.update_set(set_dict)
-        self.reset()
+        self.battle_reset()
 
-    def reset(self):
-        self.fainted = False
-        self.hp = 100.0
-        self.status = None
+    def switch_reset(self):
+        
         self.afflictions = []
+        self.new_types = []
+        self.added_type = None
+        self.temp_ability = None
 
         self.stats_changes = {
             "Atk": 0,
@@ -46,6 +49,13 @@ class Set(object):
             "Evasion": 0,
             "Accuracy": 0
         }
+
+    def battle_reset(self):
+        self.fainted = False
+        self.hp = 100.0
+        self.status = None
+        self.knocked = False
+        self.switch_reset()
 
     def update_set(self, set_dict):
         set_dict = self.set_evs_ivs(set_dict)

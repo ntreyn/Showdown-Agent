@@ -11,18 +11,19 @@ Turn Updates:
     * Must Detect: form changes, moveset **DONE**
         * Moveset requires change to moveset dict instead of list
         * Requires eventual movedex and move class
-    * Add knock off condition to items
+    * Add knock off condition to items **DONE**
     * Create nickname to species dict **DONE**
     * Z move case
 2. Update lasting attributes
     * HP / PP / Fainted **DONE**
     * Status Conditions **DONE**
 3. Update temp attributes
-    * Sub, confusion, perish, leech, ingrain
+    * Sub, confusion, perish, leech, ingrain **DONE**
     * Stat changes (boosts, drops) **DONE**
-    * Remove attributes on switch
+    * Remove attributes on switch **DONE**
 4. Differentiate between friendly and opposing pokemon
 5. Tweak for friendly updates too
+6. Add move and status effects
 
 
 Field Conditions and Hazards:
@@ -35,7 +36,7 @@ Field Conditions and Hazards:
     * Add turn logic for updating item (heat rock, light clay)
     * Add side attribute for screens
     * Add heavy sun, heavy rain, strong winds
-    * Add tailwind, lucky chant
+    * Add tailwind, lucky chant, safeguard, mist
 3. Future sight, doom desire?
     * Wait until move implementation
 

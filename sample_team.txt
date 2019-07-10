@@ -9,14 +9,15 @@ Timid Nature
 - Hidden Power [Ice]
 - Volt Switch
 
-Zeraora @ Choice Band
-Ability: Volt Absorb
-EVs: 252 Atk / 4 SpD / 252 Spe
-Jolly Nature
-- Plasma Fists
-- Close Combat
-- Knock Off
-- Volt Switch
+Smeargle  
+Ability: Own Tempo  
+EVs: 252 HP / 4 Atk / 252 Spe  
+Jolly Nature  
+IVs: 0 Atk  
+- Swagger  
+- Reflect Type  
+- Trick-or-Treat  
+- Will-O-Wisp
 
 Landorus-Therian @ Leftovers
 Ability: Intimidate

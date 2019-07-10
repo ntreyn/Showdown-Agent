@@ -32,6 +32,53 @@ class Mask:
 
     StatusList = ['BRN', 'TOX', 'PAR', 'PSN', 'SLP', 'FRZ']
 
+    Afflictions = {
+        "Taunt": None,
+        "Confused": None,
+        "Ingrain": None,
+        "Leech Seed": None,
+        "Aqua Ring": None,
+        "Attract": None,
+        "Protect": None,
+        "Drowsy": None,
+        "Foresight": None,
+        "Endure": None,
+        "Rage": None,
+        "Whirlpool": None,
+        "Fire Spin": None,
+        "Bide": None,
+        "Magnet Rise": None,
+        "Magic Coat": None,
+        "Must recharge": None,
+        "Curse": None,
+        "Disable": None,
+        "Destiny Bond": None,
+        "Perish in 2": None,
+        "Perish in 3": None,
+        "Perish next turn": None,
+        "Embargo": None,
+        "Landed": None,
+        "Telekinesis": None,
+        "Laser Focus": None,
+        "Torment": None,
+        "Heal Block": None,
+        "Bind": None,
+        "Clamp": None,
+        "Wrap": None,
+        "Encore": None,
+        "Crafty Shield": None,
+        "Quick Guard": None,
+        "Wide Guard": None,
+        "Grudge": None,
+        "Mat Block": None,
+        "Instruct": None,
+        "Imprisoning foe": None,
+        "Nightmare": None,
+        "Stockpile": None,
+        "Stockpile×2": None,
+        "Stockpile×3": None
+    }
+
     def __init__(self):
 
         """
@@ -122,6 +169,7 @@ class Mask:
 
 
     """
+    
 
     def update(self, set_changes, field_changes):
         pass

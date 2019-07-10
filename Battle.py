@@ -27,8 +27,12 @@ class Battle:
         self.turn = 0
 
         self.agent_team = agent_team
+        self.agent_nicks = {}
+        self.agent_active = None
+
         self.opponent_team = {}
         self.opponent_nicks = {}
+        self.opponent_active = None
     
     def battle(self):
 
@@ -90,40 +94,157 @@ class Battle:
 
     def update_mask(self, wait):
 
-        set_update = self.get_set_changes(wait)
+        self.update_opponent_set(wait)
+        self.update_agent_set(wait)
         field_update = self.get_field_changes(wait)
 
-        self.mask.update(set_update, field_update)
+        # self.mask.update(set_update, field_update)
+    
+    def update_agent_set(self, wait):
+        new_mons = {}
+
+        for mon in self.agent_team.values():
+            n = mon.set.team_number
+            species = mon.species
+
+            pokemon_icon = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "span[data-tooltip='pokemon|0|{}']".format(n))))
+            hover = ActionChains(self.driver).move_to_element(pokemon_icon)
+            hover.perform()
+
+            pokemon_tooltip = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div[class='tooltip']")))
+            inner_text = pokemon_tooltip.get_attribute("innerText")
+
+            #print("************")
+            #print(inner_text)
+            #print("xxxxxxxxxxxxx")
+
+            it_list = [x for x in inner_text.splitlines() if x != '']
+
+            for line in it_list:
+
+                # Update form
+                if mon.form is None:
+                    if species in self.agent_nicks.values():
+                        nick = self.agent_team[species].set.nickname
+                        if_nick_re = re.search('{} \(.*\)'.format(nick), line)
+                        if if_nick_re is not None:
+                            temp = re.search('\(.*\)', line).group()[1:-1]
+                            if temp != species:
+                                new_mons[species] = temp
+                    else:
+                        if_form_re = re.search('{} \(.*\)'.format(species), line)
+                        if if_form_re is not None:
+                            form_re = re.search('\(.*\)', line)
+                            new_species = form_re.group()[1:-1]
+                            new_mons[species] = new_species
+                
+                # Update nickname
+                if mon.set.nickname is not None:
+                    self.agent_nicks[mon.set.nickname] = species
+
+                # Update ability 
+                ability_re = re.search('Ability:', line)
+                if ability_re is not None:
+                    abil = line.replace(ability_re.group(), "").strip()
+                    if abil != self.agent_team[species].set.ability:
+                        self.agent_team[species].set.temp_ability = abil
+
+                # Item knock condition
+
+                # Update item
+                if line[:4] == "Item":
+                    item_str = line[6:].strip()
+                    if item_str[-12:] == "knocked off)":
+                        self.agent_team[species].set.item = item_str[6:-17]
+                        self.agent_team[species].set.knocked = True
+                    elif (mon.set.item is None or mon.set.item != item_str) and item_str != "(exists)":
+                        #print(species, line[6:].strip())
+                        setattr(self.agent_team[species].set, "item", line[6:].strip())
+
+                # Update moves
+                if line[0] == "•":
+                    pp_re = re.search('\(.*\)', line)
+                    if pp_re is not None:
+                        pp_remaining = int(pp_re.group()[1:-1].split('/')[0])
+                        move = line.replace(pp_re.group(), "")[1:].strip()
+                        if (move, pp_remaining) not in mon.set.moves:
+                            getattr(self.agent_team[species].set, "moves").append((move, pp_remaining))
+
+                # Probably needs to be modified
+                if line[:2] == 'HP':
+                    for status in self.mask.StatusList:
+                        if status in line:
+                            self.agent_team[species].set.status = status
+                            line = line.replace(status, "").strip()
+                            break
+
+                    fainted_re = re.search('\(fainted\)', line)
+                    if fainted_re is not None:
+                        self.agent_team[species].set.hp = 0.0
+                        self.agent_team[species].set.fainted = True
+                    else:
+                        self.agent_team[species].set.hp = float(line.replace('HP:', "").strip()[:-1])
+
+        for species, new_species in new_mons.items():
+            new_mon = self.pokedex.get_pokemon(new_species)
+
+            set_dict = {}
+            for key in self.agent_team[species].set.keys_total:
+                set_dict[key] = getattr(self.agent_team[species].set, key)
+            set_dict["species"] = new_species
+            set_dict["ability"] = new_mon.abilities[0]:
+
+            new_mon.create_set(set_dict)
+
+            if species in self.agent_nicks.values():
+                self.agent_nicks[self.agent_team[species].set.nickname] = new_species
+
+            del self.agent_team[species]
+            self.agent_team[new_species] = new_mon
         
+        opp_active = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div[class='statbar rstatbar']")))
 
-    def get_set_changes(self, wait):
+        type_list = opp_active.find_elements_by_css_selector("img.pixelated")
+        new_types = [t.get_attribute("alt") for t in type_list]
 
-        # Update sets
-        """
-        Set updates
+        active_text_list = opp_active.get_attribute("innerText").split('\n')
 
-        Nickname
-        Ability
-        Moveset
-        Item
-        Form change
-        
-        Lasting conditions:
-        
-        HP / Fainted
-        PP
-        Status
-        
-        In play conditions:
+        name_str = active_text_list[0].strip()
+        if name_str in self.agent_nicks:
+            self.agent_active = self.agent_nicks[name_str]
+        else:
+            self.agent_active = name_str
 
-        Substitute
-        Perish Song
-        Leech Seed
-        Ingrain
-        Confusion
-        Boosts / Drops
-        """
+        if len(active_text_list) > 2:
+            status_str = active_text_list[2].replace(u'\xa0', u' ')
+            status_list = status_str.split()
+            print(status_list)
+            print(active_text_list[2])
 
+            if '+' in status_list:
+                added_type = new_types.pop(-1)
+            else:
+                added_type = None
+
+            self.agent_team[self.agent_active].set.new_types = new_types
+            self.agent_team[self.agent_active].set.added_type = added_type
+
+            for afflict in self.mask.Afflictions:
+                print(afflict)
+                if afflict in status_str and afflict not in self.agent_team[self.agent_active].set.afflictions:
+                    self.agent_team[self.agent_active].set.afflictions.append(afflict)
+            
+            for stat in self.agent_team[self.agent_active].set.stats_changes:
+                if stat in status_list:
+                    ind = status_list.index(stat)
+                    mult = float(status_list[ind - 1][:-1])
+                    add = self.stat_mult_to_add(stat, mult)
+                    self.agent_team[self.agent_active].set.stats_changes[stat] = add
+
+        for mon in self.agent_team.values():
+            mon.print_set()
+
+    def update_opponent_set(self, wait):
         new_mons = {}
 
         for mon in self.opponent_team.values():
@@ -145,7 +266,6 @@ class Battle:
 
             for line in it_list:
 
-
                 # Update form
                 if mon.form is None:
                     if species in self.opponent_nicks.values():
@@ -161,7 +281,6 @@ class Battle:
                             form_re = re.search('\(.*\)', line)
                             new_species = form_re.group()[1:-1]
                             new_mons[species] = new_species
-                    
                 
                 # Update nickname
                 if mon.set.nickname is None:
@@ -178,19 +297,28 @@ class Battle:
                         setattr(self.opponent_team[species].set, "nickname", nick)
                         self.opponent_nicks[nick] = species
 
-
                 # Update ability 
                 if mon.set.ability is None:
                     ability_re = re.search('Ability:', line)
                     if ability_re is not None:
                         #print(species, line.replace(ability_re.group(), "").strip())
                         setattr(self.opponent_team[species].set, "ability", line.replace(ability_re.group(), "").strip())
+                else:
+                    ability_re = re.search('Ability:', line)
+                    if ability_re is not None:
+                        abil = line.replace(ability_re.group(), "").strip()
+                        if abil != self.opponent_team[species].set.ability:
+                            self.opponent_team[species].set.temp_ability = abil
 
                 # Item knock condition
 
                 # Update item
-                if mon.set.item is None:
-                    if line[:4] == "Item" and line[6:].strip() != "(exists)":
+                if line[:4] == "Item":
+                    item_str = line[6:].strip()
+                    if item_str[-12:] == "knocked off)":
+                        self.opponent_team[species].set.item = item_str[6:-17]
+                        self.opponent_team[species].set.knocked = True
+                    elif (mon.set.item is None or mon.set.item != item_str) and item_str != "(exists)":
                         #print(species, line[6:].strip())
                         setattr(self.opponent_team[species].set, "item", line[6:].strip())
 
@@ -226,6 +354,8 @@ class Battle:
             for key in self.opponent_team[species].set.keys_total:
                 set_dict[key] = getattr(self.opponent_team[species].set, key)
             set_dict["species"] = new_species
+            set_dict["ability"] = new_mon.abilities[0]:
+
             new_mon.create_set(set_dict)
 
             if species in self.opponent_nicks.values():
@@ -235,63 +365,47 @@ class Battle:
             self.opponent_team[new_species] = new_mon
         
         opp_active = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div[class='statbar lstatbar']")))
+        
+        # type_list = opp_active.find_elements_by_css_selector("img[class='pixelated']")
+        type_list = opp_active.find_elements_by_css_selector("img.pixelated")
+        new_types = [t.get_attribute("alt") for t in type_list]
+
         active_text_list = opp_active.get_attribute("innerText").split('\n')
 
         name_str = active_text_list[0].strip()
         if name_str in self.opponent_nicks:
-            active_species = self.opponent_nicks[name_str]
+            self.opponent_active = self.opponent_nicks[name_str]
         else:
-            active_species = name_str
+            self.opponent_active = name_str
 
         if len(active_text_list) > 2:
-            status_list = active_text_list[2].split()
+            status_str = active_text_list[2].replace(u'\xa0', u' ')
+            status_list = status_str.split()
+            print(status_list)
+            print(active_text_list[2])
 
-            for stat in self.opponent_team[active_species].set.stats_changes:
+            if '+' in status_list:
+                added_type = new_types.pop(-1)
+            else:
+                added_type = None
+
+            self.opponent_team[self.opponent_active].set.new_types = new_types
+            self.opponent_team[self.opponent_active].set.added_type = added_type
+
+            for afflict in self.mask.Afflictions:
+                print(afflict)
+                if afflict in status_str and afflict not in self.opponent_team[self.opponent_active].set.afflictions:
+                    self.opponent_team[self.opponent_active].set.afflictions.append(afflict)
+            
+            for stat in self.opponent_team[self.opponent_active].set.stats_changes:
                 if stat in status_list:
                     ind = status_list.index(stat)
                     mult = float(status_list[ind - 1][:-1])
                     add = self.stat_mult_to_add(stat, mult)
-                    self.opponent_team[active_species].set.stats_changes[stat] = add
+                    self.opponent_team[self.opponent_active].set.stats_changes[stat] = add
 
         for mon in self.opponent_team.values():
             mon.print_set()
-
-        
-
-        """
-            set_dict = {
-                "species": name,
-                "nickname": None,
-                "gender": gender,
-                "item": item,
-                "ability": None,
-                "level": level,
-                "shiny": None,
-                "happiness": None,
-                "EVs": {},
-                "nature": None,
-                "IVs": {},
-                "moves": None
-            }
-        """
-
-        # <span class="status brn">BRN</span>
-        # Look for class^='status' innerText
-        """
-        <div class="status">
-            <span class="bad">Leech&nbsp;Seed</span> 
-        </div>
-        """
-        # Look for class='status'
-        # find_element_by_css_select "span[class='bad']" innerText
-        """
-        <div class="status">
-            <span class="brn">BRN</span>
-            <span class="bad">Confused</span> 
-        </div>
-        """
-
-        return {}
 
     def get_field_changes(self, wait):
 
@@ -345,37 +459,6 @@ class Battle:
 
         return field
 
-        """
-        .67
-        .5
-        .4
-        .33
-        .29
-        .25
-
-        1.5
-        2
-        2.5
-        3
-        3.5
-        4
-
-        A / E
-        0.75
-        0.6
-        0.5
-        0.43
-        0.38
-        0.33
-
-        1.33
-        1.67
-        2
-        2.33
-        2.67
-        3
-        """
-
     def stat_mult_to_add(self, stat, mult):
         convert_norm = {
             .67: -1,
@@ -405,7 +488,7 @@ class Battle:
             2.67: 5,
             3: 6
         }
-        if stat == 'Envasion' or stat == 'Accuracy':
+        if stat == 'Evasion' or stat == 'Accuracy':
             return convert_ae[mult]
         else:
             return convert_norm[mult]
