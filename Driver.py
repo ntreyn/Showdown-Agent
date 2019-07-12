@@ -197,6 +197,9 @@ class ShowdownDriver:
                     if next_index >= len(teams_list):
                         break
                     line = teams_list[next_index]
+
+                if "-Mega" in species:
+                    species = self.pokedex.get_pokemon(species).baseSpecies
                 
                 set_dict = {
                     "team_number": len(self.selected_team),
@@ -215,6 +218,8 @@ class ShowdownDriver:
                 }
 
                 pokemon = self.pokedex.get_pokemon(species)
+                if ability not in pokemon.abilities:
+                    set_dict["ability"] = None
                 pokemon.create_set(set_dict)
                 self.selected_team[species] = pokemon
 

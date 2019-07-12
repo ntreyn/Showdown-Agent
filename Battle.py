@@ -29,14 +29,16 @@ class Battle:
         self.agent_team = agent_team
         self.agent_nicks = {}
         self.agent_active = None
+        self.agent_alias = {}
 
         self.opponent_team = {}
         self.opponent_nicks = {}
         self.opponent_active = None
+        self.opponent_alias = {}
     
     def battle(self):
 
-        wait = WebDriverWait(self.driver, 20)
+        wait = WebDriverWait(self.driver, 15)
         self.set_teams(wait)
 
         rightbar = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div[class='rightbar']")))
@@ -47,50 +49,112 @@ class Battle:
         # for tbh in turn0_battle_history:
             # print(tbh.get_attribute("innerText"))
 
-        time.sleep(30)
-
         self.mask = Mask()
         self.agent = Agent(self.mask)
 
-        self.agent.lead()
+        try:
+            lead = self.agent.lead()
+            lead_button = wait.until(EC.visibility_of_element_located((By.XPATH, "//button[(@name='{}') and (@value='{}')]".format(lead["name"], lead["value"]))))
+            lead_button.click()
+        except TimeoutException:
+            try:
+                exit_button = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "button[name='closeAndMainMenu']")))
+                exit_button.click()
+                self.done = True
+                return
+            except TimeoutException:
+                print("Error: no lead no exit")
 
-        self.update_mask(wait)
+        time.sleep(5)
+
+        try:
+            timer_button = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "button[name='openTimer']")))
+            timer_button.click()
+
+            timer_on = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "button[name='timerOn']")))
+            timer_on.click()
+        except (TimeoutException, StaleElementReferenceException) as e:
+            print("failed timer")
+
+        time.sleep(5)
+        try:
+            self.update_mask(wait)
+        except TimeoutException:
+            print("failed update")
 
         self.turn += 1
 
         while not self.done:
-            print("here")
-            time.sleep(15)
             self.execute_turn(wait)
 
     def execute_turn(self, wait):
+        
+        for attempts in range(2):
+            try:
+                #print("here3")
+                action = self.agent.get_action()
+                self.execute_action(action, wait)
+                break
+            except TimeoutException:
+                print("failed action")
+                continue
 
-        # Speed and damage calcs
-        # Assess switches (both sides)
+        count = 0
+        #print("here0")
+        
+        for attempts in range(5):
+            #print("here5")
+            try:
+                #print("here1")
+                wait.until(EC.visibility_of_element_located((By.XPATH, "//h2[contains(text(), 'Turn {}')]".format(self.turn + 1))))
+                break
+            except TimeoutException:
+                # check switch
+                try:
+                    #print("here2")
+                    wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "switchmenu")))
+                    switch = self.agent.get_switch()
+                    switch_button = wait.until(EC.visibility_of_element_located((By.XPATH, "//button[(@name='{}') and (@value='{}')]".format(switch["name"], switch["value"]))))
+                    switch_button.click()
+                    time.sleep(5)
+                    continue
+                except TimeoutException:
+                    pass
 
-        # Assess following turns
+                try:
+                    #print("here4")
+                    exit_button = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "button[name='closeAndMainMenu']")))
+                    exit_button.click()
+                    self.done = True
+                    return
+                except TimeoutException:
+                    count += 1
+                    continue
+        
+        if count == 5:
+            print("Error: no turn 'n' no close")
+            exit()
 
-        # Choose action
-        # Attack or switch
-
-        # Update info
-
-        action = self.agent.get_action()
-        self.execute_action(action, wait)
-
-    
-
+        self.update_mask(wait) 
         self.turn += 1
-        self.done = True
+        print(self.turn)
 
 
     def execute_action(self, action, wait):
+        if action["mega"]:
+            mega_checkbox = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "input[name='megaevo']")))
+            mega_checkbox.click()
+        if action["zmove"]:
+            z_checkbox = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "input[name='zmove']")))
+            z_checkbox.click()
+            time.sleep(3)
+            z_button = wait.until(EC.visibility_of_element_located((By.XPATH, "//button[starts-with(@data-tooltip, 'zmove') and (@value='{}')]".format(action["value"]))))
+            z_button.click()
+        else:
+            action_button = wait.until(EC.visibility_of_element_located((By.XPATH, "//button[(@name='{}') and (@value='{}')]".format(action["name"], action["value"]))))
+            action_button.click()
 
-
-
-
-        
-        self.update_mask(wait)    
+        time.sleep(10)   
 
     def update_mask(self, wait):
 
@@ -142,6 +206,12 @@ class Battle:
                 if mon.set.nickname is not None:
                     self.agent_nicks[mon.set.nickname] = species
 
+
+                alias_re = re.search('\({}\)'.format(species), line)
+                if alias_re is not None:
+                    alias = line.replace(alias_re.group(), "").strip()
+                    self.agent_alias[alias] = species
+
                 # Update ability 
                 ability_re = re.search('Ability:', line)
                 if ability_re is not None:
@@ -183,7 +253,9 @@ class Battle:
                         self.agent_team[species].set.hp = 0.0
                         self.agent_team[species].set.fainted = True
                     else:
-                        self.agent_team[species].set.hp = float(line.replace('HP:', "").strip()[:-1])
+                        temp = line.replace('HP:', "").strip()
+                        ind = temp.index('%')
+                        self.agent_team[species].set.hp = float(line.replace('HP:', "").strip()[:ind])
 
         for species, new_species in new_mons.items():
             new_mon = self.pokedex.get_pokemon(new_species)
@@ -192,12 +264,15 @@ class Battle:
             for key in self.agent_team[species].set.keys_total:
                 set_dict[key] = getattr(self.agent_team[species].set, key)
             set_dict["species"] = new_species
-            set_dict["ability"] = new_mon.abilities[0]:
+            set_dict["ability"] = new_mon.abilities[0]
+            set_dict["temp_ability"] = None
 
             new_mon.create_set(set_dict)
 
             if species in self.agent_nicks.values():
                 self.agent_nicks[self.agent_team[species].set.nickname] = new_species
+
+            self.agent_alias[species] = new_species
 
             del self.agent_team[species]
             self.agent_team[new_species] = new_mon
@@ -210,16 +285,17 @@ class Battle:
         active_text_list = opp_active.get_attribute("innerText").split('\n')
 
         name_str = active_text_list[0].strip()
+
         if name_str in self.agent_nicks:
             self.agent_active = self.agent_nicks[name_str]
+        elif name_str in self.agent_alias:
+            self.agent_active = self.agent_alias[name_str]
         else:
             self.agent_active = name_str
 
         if len(active_text_list) > 2:
             status_str = active_text_list[2].replace(u'\xa0', u' ')
             status_list = status_str.split()
-            print(status_list)
-            print(active_text_list[2])
 
             if '+' in status_list:
                 added_type = new_types.pop(-1)
@@ -230,7 +306,6 @@ class Battle:
             self.agent_team[self.agent_active].set.added_type = added_type
 
             for afflict in self.mask.Afflictions:
-                print(afflict)
                 if afflict in status_str and afflict not in self.agent_team[self.agent_active].set.afflictions:
                     self.agent_team[self.agent_active].set.afflictions.append(afflict)
             
@@ -241,8 +316,9 @@ class Battle:
                     add = self.stat_mult_to_add(stat, mult)
                     self.agent_team[self.agent_active].set.stats_changes[stat] = add
 
-        for mon in self.agent_team.values():
-            mon.print_set()
+        #self.agent_team[self.agent_active].print_set()
+        #for mon in self.agent_team.values():
+        #    mon.print_set()
 
     def update_opponent_set(self, wait):
         new_mons = {}
@@ -354,12 +430,15 @@ class Battle:
             for key in self.opponent_team[species].set.keys_total:
                 set_dict[key] = getattr(self.opponent_team[species].set, key)
             set_dict["species"] = new_species
-            set_dict["ability"] = new_mon.abilities[0]:
+            set_dict["ability"] = new_mon.abilities[0]
+            set_dict["temp_ability"] = None
 
             new_mon.create_set(set_dict)
 
             if species in self.opponent_nicks.values():
                 self.opponent_nicks[self.opponent_team[species].set.nickname] = new_species
+
+            self.opponent_alias[species] = new_species
 
             del self.opponent_team[species]
             self.opponent_team[new_species] = new_mon
@@ -375,14 +454,14 @@ class Battle:
         name_str = active_text_list[0].strip()
         if name_str in self.opponent_nicks:
             self.opponent_active = self.opponent_nicks[name_str]
+        elif name_str in self.opponent_alias:
+            self.opponent_active = self.opponent_alias[name_str]
         else:
             self.opponent_active = name_str
 
         if len(active_text_list) > 2:
             status_str = active_text_list[2].replace(u'\xa0', u' ')
             status_list = status_str.split()
-            print(status_list)
-            print(active_text_list[2])
 
             if '+' in status_list:
                 added_type = new_types.pop(-1)
@@ -393,7 +472,6 @@ class Battle:
             self.opponent_team[self.opponent_active].set.added_type = added_type
 
             for afflict in self.mask.Afflictions:
-                print(afflict)
                 if afflict in status_str and afflict not in self.opponent_team[self.opponent_active].set.afflictions:
                     self.opponent_team[self.opponent_active].set.afflictions.append(afflict)
             
@@ -404,8 +482,8 @@ class Battle:
                     add = self.stat_mult_to_add(stat, mult)
                     self.opponent_team[self.opponent_active].set.stats_changes[stat] = add
 
-        for mon in self.opponent_team.values():
-            mon.print_set()
+        #for mon in self.opponent_team.values():
+        #    mon.print_set()
 
     def get_field_changes(self, wait):
 

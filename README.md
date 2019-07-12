@@ -18,9 +18,10 @@ Turn Updates:
     * HP / PP / Fainted **DONE**
     * Status Conditions **DONE**
 3. Update temp attributes
-    * Sub, confusion, perish, leech, ingrain **DONE**
+    * Confusion, perish, leech, ingrain, etc **DONE**
     * Stat changes (boosts, drops) **DONE**
     * Remove attributes on switch **DONE**
+    * Add substitute
 4. Differentiate between friendly and opposing pokemon
 5. Tweak for friendly updates too
 6. Add move and status effects

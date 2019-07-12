@@ -29,9 +29,8 @@ class Set(object):
                             "status",  "afflictions", "stats_changes", "new_types", "added_type", "knocked", "temp_ability"]
         self.keys_in = ["EVs", "IVs", "fainted", "hp", "status", "afflictions", "stats_changes", "new_types", 
                             "added_type", "knocked", "temp_ability"]
-
-        self.update_set(set_dict)
         self.battle_reset()
+        self.update_set(set_dict)
 
     def switch_reset(self):
         
