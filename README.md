@@ -22,22 +22,23 @@ Turn Updates:
     * Stat changes (boosts, drops) **DONE**
     * Remove attributes on switch **DONE**
     * Add substitute
-4. Differentiate between friendly and opposing pokemon
-5. Tweak for friendly updates too
+4. Differentiate between friendly and opposing pokemon **DONE**
+5. Tweak for friendly updates too **DONE**
 6. Add move and status effects
+7. Tox next damage edge case
 
 
 Field Conditions and Hazards:
 
-1. Implement hazards
+1. Implement hazards **DONE**
     * Requires side attribute
 2. Finish weather
-    * Add starter
+    * Add starter **DONE**
         * Requires nickname dict and friendly vs. opposing differentiation
     * Add turn logic for updating item (heat rock, light clay)
-    * Add side attribute for screens
-    * Add heavy sun, heavy rain, strong winds
-    * Add tailwind, lucky chant, safeguard, mist
+    * Add side attribute for screens **DONE**
+    * Add heavy sun, heavy rain, strong winds **DONE**
+    * Add tailwind, lucky chant, safeguard, mist **DONE**
 3. Future sight, doom desire?
     * Wait until move implementation
 

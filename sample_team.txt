@@ -14,10 +14,10 @@ Ability: Own Tempo
 EVs: 252 HP / 4 Atk / 252 Spe  
 Jolly Nature  
 IVs: 0 Atk  
-- Swagger  
-- Reflect Type  
-- Trick-or-Treat  
-- Will-O-Wisp
+- Spikes 
+- Stealth Rock
+- Toxic Spikes 
+- Sticky Web
 
 Landorus-Therian @ Leftovers
 Ability: Intimidate

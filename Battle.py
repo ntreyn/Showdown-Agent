@@ -14,6 +14,8 @@ from selenium.common.exceptions import NoSuchElementException
 from AI import Agent
 from BattleMask import Mask
 
+from misc_utils import StatusList, ConditionCauses, Afflictions, HazardsMap, change_hazards
+
 import time
 import re
 
@@ -162,7 +164,7 @@ class Battle:
         self.update_agent_set(wait)
         field_update = self.get_field_changes(wait)
 
-        # self.mask.update(set_update, field_update)
+        self.mask.update(self.opponent_team, self.opponent_active, self.agent_team, self.agent_active, field_update)
     
     def update_agent_set(self, wait):
         new_mons = {}
@@ -242,7 +244,7 @@ class Battle:
 
                 # Probably needs to be modified
                 if line[:2] == 'HP':
-                    for status in self.mask.StatusList:
+                    for status in StatusList:
                         if status in line:
                             self.agent_team[species].set.status = status
                             line = line.replace(status, "").strip()
@@ -305,7 +307,7 @@ class Battle:
             self.agent_team[self.agent_active].set.new_types = new_types
             self.agent_team[self.agent_active].set.added_type = added_type
 
-            for afflict in self.mask.Afflictions:
+            for afflict in Afflictions:
                 if afflict in status_str and afflict not in self.agent_team[self.agent_active].set.afflictions:
                     self.agent_team[self.agent_active].set.afflictions.append(afflict)
             
@@ -410,7 +412,7 @@ class Battle:
 
                 if line[:2] == 'HP':
 
-                    for status in self.mask.StatusList:
+                    for status in StatusList:
                         if status in line:
                             self.opponent_team[species].set.status = status
                             line = line.replace(status, "").strip()
@@ -471,7 +473,7 @@ class Battle:
             self.opponent_team[self.opponent_active].set.new_types = new_types
             self.opponent_team[self.opponent_active].set.added_type = added_type
 
-            for afflict in self.mask.Afflictions:
+            for afflict in Afflictions:
                 if afflict in status_str and afflict not in self.opponent_team[self.opponent_active].set.afflictions:
                     self.opponent_team[self.opponent_active].set.afflictions.append(afflict)
             
@@ -487,17 +489,28 @@ class Battle:
 
     def get_field_changes(self, wait):
 
+        #The opposing Swampert used Substitute!
+        #The opposing Swampert put in a substitute!  
+
+        #Swampert's substitute faded!
+
+        #The opposing Swampert used Substitute!
+        #But it does not have enough HP left to make a substitute!
+
         field = {}
         
         # Get field conditions
         field_conditions = {}
-        feild_condition_list = wait.until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "div[class^='weather']")))
+        field_condition_list = wait.until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "div[class^='weather']")))
 
-        fc_it_list = [h.get_attribute("innerText") for h in feild_condition_list if h.get_attribute("innerText") != '']
+        fc_it_list = [h.get_attribute("innerText") for h in field_condition_list if h.get_attribute("innerText") != '']
 
         for fc_it in fc_it_list:
             fcs = fc_it.split('\n')
             for fc in fcs:
+                if fc[:5] == "Foe's":
+                    fc = fc[5:].strip()
+
                 turns_re = re.search('\(([^)]+)\)', fc)
                 if turns_re is not None:
                     turns_str = turns_re[0].strip()
@@ -507,33 +520,106 @@ class Battle:
                     field_conditions[condition] = {
                         "condition": condition,
                         "turns": turns,
-                        "starter": None
+                        "starter": None,
+                        "side": None
+                    }
+                elif fc.strip() in ConditionCauses:
+                    field_conditions[fc.strip()] = {
+                        "condition": fc.strip(),
+                        "turns": None,
+                        "starter": None,
+                        "side": None
                     }
 
         for fc in field_conditions:
+            if fc[:5] == "Foe's":
+                fc = fc[5:].strip()
+
             if fc in self.mask.field["conditions"]:
                 field_conditions[fc]["starter"] = self.mask.field["conditions"][fc]["starter"]
+                field_conditions[fc]["side"] = self.mask.field["conditions"][fc]["side"]
             else:
                 turn_battle_log = self.get_battle_log(wait)
                 for log in turn_battle_log:
-                    x = log.get_attribute("innerText")
-                    y = re.search('{}'.format(self.mask.ConditionCauses[fc]["move"]), x)
-                    if y is not None:
-                        print(x)
-                        print(self.mask.ConditionCauses[fc]["move"])
+                    log_it = log.get_attribute("innerText")
+                    fc_move_re = re.search('{}'.format(ConditionCauses[fc]["move"]), log_it)
+                    if fc_move_re is not None:
+                        fc_line = log_it.split('\n')[0]
+                        if fc_line[0:12] == "The opposing":
+                            starter_str = fc_line[13:].split()[0]
+
+                            if starter_str in self.opponent_nicks:
+                                starter = self.opponent_nicks[starter_str]
+                            elif starter_str in self.opponent_alias:
+                                starter = self.opponent_alias[starter_str]
+                            else:
+                                starter = starter_str
+
+                            field_conditions[fc]["starter"] = starter
+                            field_conditions[fc]["side"] = 'O'
+                        else:
+                            starter_str = fc_line.split()[0]
+
+                            if starter_str in self.agent_nicks:
+                                starter = self.agent_nicks[starter_str]
+                            elif starter_str in self.agent_alias:
+                                starter = self.agent_alias[starter_str]
+                            else:
+                                starter = starter_str
+
+                            field_conditions[fc]["starter"] = starter
+                            field_conditions[fc]["side"] = 'A'
+
                         break
-                    z = re.search('{}'.format(self.mask.ConditionCauses[fc]["ability"]), x)
-                    if z is not None:
-                        print(x)
-                        print(self.mask.ConditionCauses[fc]["ability"])
+                    fc_abil_re = re.search('{}'.format(ConditionCauses[fc]["ability"]), log_it)
+                    if fc_abil_re is not None:
+                        fc_line = log_it.split('\n')[0]
+                        if fc_line[1:13] == "The opposing":
+                            starter_text = fc_line[14:-1].replace(ConditionCauses[fc]["ability"], "").strip()
+                            starter_str = starter_text[:-2]
+
+                            if starter_str in self.opponent_nicks:
+                                starter = self.opponent_nicks[starter_str]
+                            elif starter_str in self.opponent_alias:
+                                starter = self.opponent_alias[starter_str]
+                            else:
+                                starter = starter_str
+
+                            field_conditions[fc]["starter"] = starter
+                            field_conditions[fc]["side"] = 'O'
+                        else:
+                            starter_text = fc_line[1:-1].replace(ConditionCauses[fc]["ability"], "").strip()
+                            starter_str = starter_text[:-2]
+
+                            if starter_str in self.agent_nicks:
+                                starter = self.agent_nicks[starter_str]
+                            elif starter_str in self.agent_alias:
+                                starter = self.agent_alias[starter_str]
+                            else:
+                                starter = starter_str
+
+                            field_conditions[fc]["starter"] = starter
+                            field_conditions[fc]["side"] = 'A'
+
                         break
-                        
-                
 
 
-        # Get hazards from img src or log
+
+        print("HERE")
+        hazards = self.mask.field["hazards"]
+        log = self.get_battle_log(wait)
+
+        for html_line in log:
+            lines = [x for x in html_line.get_attribute("innerText").split('\n') if x != '']
+            for line in lines:
+                if line in HazardsMap:
+                    hazards = change_hazards(hazards, line)
+
+        print(field_conditions)
+        print(hazards)
 
         field["conditions"] = field_conditions
+        field["hazards"] = hazards
 
         return field
 
